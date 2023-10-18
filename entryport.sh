@@ -38,42 +38,42 @@ generate_config() {
                 "decryption":"none",
                 "fallbacks":[
                     {
-                        "dest":3000
-                    },
-                    {
                         "dest":3001
                     },
                     {
-                        "path":"${VLESS_WSPATH}",
                         "dest":3002
                     },
                     {
-                        "path":"${VLESS_WARP_WSPATH}",
+                        "path":"${VLESS_WSPATH}",
                         "dest":3003
                     },
                     {
-                        "path":"${VMESS_WSPATH}",
+                        "path":"${VLESS_WARP_WSPATH}",
                         "dest":3004
                     },
                     {
-                        "path":"${VMESS_WARP_WSPATH}",
+                        "path":"${VMESS_WSPATH}",
                         "dest":3005
                     },
                     {
-                        "path":"${TROJAN_WSPATH}",
+                        "path":"${VMESS_WARP_WSPATH}",
                         "dest":3006
                     },
                     {
-                        "path":"${TROJAN_WARP_WSPATH}",
+                        "path":"${TROJAN_WSPATH}",
                         "dest":3007
                     },
                     {
-                        "path":"${SS_WSPATH}",
+                        "path":"${TROJAN_WARP_WSPATH}",
                         "dest":3008
                     },
                     {
-                        "path":"${SS_WARP_WSPATH}",
+                        "path":"${SS_WSPATH}",
                         "dest":3009
+                    },
+                    {
+                        "path":"${SS_WARP_WSPATH}",
+                        "dest":3010
                     }
                 ]
             },
@@ -82,7 +82,7 @@ generate_config() {
             }
         },
         {
-            "port":3000,
+            "port":3001,
             "listen":"127.0.0.1",
             "protocol":"vless",
             "settings":{
@@ -100,7 +100,7 @@ generate_config() {
         },
         {
             "tag":"to_warp",
-            "port":3001,
+            "port":3002,
             "listen":"127.0.0.1",
             "protocol":"socks",
             "settings":{
@@ -109,7 +109,7 @@ generate_config() {
             }
         },
         {
-            "port":3002,
+            "port":3003,
             "listen":"127.0.0.1",
             "protocol":"vless",
             "settings":{
@@ -139,7 +139,7 @@ generate_config() {
         },
         {
             "tag":"from_vless_warp",
-            "port":3003,
+            "port":3004,
             "listen":"127.0.0.1",
             "protocol":"vless",
             "settings":{
@@ -168,7 +168,7 @@ generate_config() {
             }
         },
         {
-            "port":3004,
+            "port":3005,
             "listen":"127.0.0.1",
             "protocol":"vmess",
             "settings":{
@@ -196,7 +196,7 @@ generate_config() {
         },
         {
             "tag":"from_vmess_warp",
-            "port":3005,
+            "port":3006,
             "listen":"127.0.0.1",
             "protocol":"vmess",
             "settings":{
@@ -223,7 +223,7 @@ generate_config() {
             }
         },
         {
-            "port":3006,
+            "port":3007,
             "listen":"127.0.0.1",
             "protocol":"trojan",
             "settings":{
@@ -251,7 +251,7 @@ generate_config() {
         },
         {
             "tag":"from_trojan_warp",
-            "port":3007,
+            "port":3008,
             "listen":"127.0.0.1",
             "protocol":"trojan",
             "settings":{
@@ -278,7 +278,7 @@ generate_config() {
             }
         },
         {
-            "port":3008,
+            "port":3009,
             "listen":"127.0.0.1",
             "protocol":"shadowsocks",
             "settings":{
@@ -307,7 +307,7 @@ generate_config() {
         },
         {
             "tag":"from_ss_warp",
-            "port":3009,
+            "port":3010,
             "listen":"127.0.0.1",
             "protocol":"shadowsocks",
             "settings":{
