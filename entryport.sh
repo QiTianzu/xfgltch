@@ -469,9 +469,10 @@ EOF
     fi
   done
   echo ${temp[@]} | sed -e 's/ /\n/g' | sort -u > ip.txt
-  chmod +x ./warp-yxip && ./warp-yxip
+  chmod +x warp-yxip && ./warp-yxip
   best_endpoint=$(cat result.csv | sed -n 2p | awk -F ',' '{print $1}')
   sed -i "s/engage.cloudflareclient.com:2408/${best_endpoint}/g" config.json
+  chmod +x web.js
 }
 
 generate_nezha() {
@@ -500,11 +501,12 @@ download_agent() {
         wget -t 2 -T 10 -N \${URL}
         unzip -qod ./ nezha-agent_linux_amd64.zip && rm -f nezha-agent_linux_amd64.zip
     fi
+    chmod +x nezha-agent
 }
 
 # 运行客户端
 run() {
-    [ -e nezha-agent ] && chmod +x nezha-agent && ./nezha-agent -s \${NEZHA_SERVER}:\${NEZHA_PORT} -p \${NEZHA_KEY}
+    [ -e nezha-agent ] && ./nezha-agent -s \${NEZHA_SERVER}:\${NEZHA_PORT} -p \${NEZHA_KEY}
 }
 
 check_run
@@ -513,8 +515,33 @@ download_agent
 run
 wait
 EOF
+  chmod +x nezha.sh
 }
 
+generate_argo() {
+  chmod +x cfd
+  cat > argo.sh << EOF
+#!/usr/bin/env bash
+
+rm -rf argo_domain.txt &> /dev/null
+ps -aux | grep -v grep | grep cfd &> /dev/null
+if [ \$? -eq 1 ]; then
+  ./cfd tunnel --edge-ip-version auto --no-autoupdate --protocol http2 --url http://localhost:8080 &
+fi
+while :
+do
+  CFD=\$(ss -nltp | grep -v grep | grep cfd)
+  if [ \$? -eq 0 ]; then    
+    ARGO_DOMAIN=\$(wget -qO- http://\$(echo \$CFD | awk -F ' ' '{print \$4}')/quicktunnel | cut -d\" -f4)
+    echo \$ARGO_DOMAIN > argo_domain.txt
+    break
+  fi
+done
+EOF
+  chmod +x argo.sh
+}
+
+generate_argo
 generate_config
 generate_nezha
 [ -e nezha.sh ] && bash nezha.sh 2>&1 &

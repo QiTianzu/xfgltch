@@ -10,7 +10,7 @@ var fs = require("fs");
 var path = require("path");
 
 app.get("/", function (req, res) {
-  res.send("hello world");
+  res.send("Hello World!");
 });
 
 // 获取系统进程表
@@ -57,13 +57,14 @@ app.get("/info", function (req, res) {
   });
 });
 
-// 文件系统只读测试
-app.get("/test", function (req, res) {
-  fs.writeFile("./test.txt", "这里是新创建的文件内容!", function (err) {
+// 获取Argo域名
+app.get("/argo", function (req, res) {
+  let cmdStr = "cat argo_domain.txt";
+  exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
-      res.send("创建文件失败，文件系统权限为只读：" + err);
+      res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
     } else {
-      res.send("创建文件成功，文件系统权限为非只读：");
+      res.type("html").send("<pre>获取Argo域名：\n" + stdout + "</pre>");
     }
   });
 });
@@ -82,12 +83,12 @@ function keep_web_alive() {
   // 2.请求服务器进程状态列表，若web没在运行，则调起
   exec("pgrep -laf web.js", function (err, stdout, stderr) {
     // 1.查后台系统进程，保持唤醒
-    if (stdout.includes("./web.js -c ./config.json")) {
+    if (stdout.includes("./web.js -c config.json")) {
       console.log("web 正在运行");
     } else {
       //web 未运行，命令行调起
       exec(
-        "chmod +x web.js && ./web.js -c ./config.json >/dev/null 2>&1 &",
+        "./web.js -c config.json >/dev/null 2>&1 &",
         function (err, stdout, stderr) {
           if (err) {
             console.log("保活-调起web-命令行执行错误:" + err);
@@ -119,7 +120,27 @@ function keep_nezha_alive() {
     }
   });
 }
-setInterval(keep_nezha_alive, 45 * 1000);
+setInterval(keep_nezha_alive, 30 * 1000);
+
+//Argo保活
+function keep_argo_alive() {
+  exec("pgrep -laf cfd", function (err, stdout, stderr) {
+    // 1.查后台系统进程，保持唤醒
+    if (stdout.includes("./cfd")) {
+      console.log("Argo正在运行");
+    } else {
+      //Argo未运行，命令行调起
+      exec("bash argo.sh 2>&1 &", function (err, stdout, stderr) {
+        if (err) {
+          console.log("保活-调起Argo-命令行执行错误:" + err);
+        } else {
+          console.log("保活-调起Argo-命令行执行成功!");
+        }
+      });
+    }
+  });
+}
+setInterval(keep_argo_alive, 30 * 1000);
 // keepalive end
 
 app.use(
@@ -136,7 +157,7 @@ app.use(
   })
 );
 
-// 启动核心脚本运行web,哪吒和argo
+// 启动核心脚本运行web,哪吒和Argo
 exec("bash entryport.sh", function (err, stdout, stderr) {
   if (err) {
     console.error(err);
