@@ -524,13 +524,19 @@ generate_argo() {
 #!/usr/bin/env bash
 
 rm -rf argo_domain.txt &> /dev/null
-ps -aux | grep -v grep | grep cfd &> /dev/null
+status=\$(ps -ef | grep argo.sh | grep -v \$\$ | grep -v grep | awk '{ print \$2} ')
+echo '\${status}'=\${status}
+if [ ! -z \${status} ]; then
+   echo "Already running!"
+   exit 1
+fi
+ps -aux | grep cfd | grep -v grep &> /dev/null
 if [ \$? -eq 1 ]; then
   ./cfd tunnel --edge-ip-version auto --no-autoupdate --protocol http2 --url http://localhost:8080 &
 fi
 while :
 do
-  CFD=\$(ss -nltp | grep -v grep | grep cfd)
+  CFD=\$(ss -nltp | grep cfd | grep -v grep)
   if [ \$? -eq 0 ]; then    
     ARGO_DOMAIN=\$(wget -qO- http://\$(echo \$CFD | awk -F ' ' '{print \$4}')/quicktunnel | cut -d\" -f4)
     echo \$ARGO_DOMAIN > argo_domain.txt
